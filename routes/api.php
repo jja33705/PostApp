@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JWTAuthController;
+use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,8 @@ Route::get('unauthorized', function () {
         'message' => 'Unauthorized',
     ], 401);
 })->name('api.jwt.unauthorized');
+
+Route::get('/index', [PostController::class, 'index'])->name('api.post.index');
 
 //미들웨어를 통해 로그린한 사용자와 로그인하지 않은 사용자를  판단. Middleware의 Authenticate.php를 수정하여 로그인하지 않은 사용자는 unauthorized라우트로 리다이렉트시킴
 Route::group(['middleware' => 'auth:api'], function () {
