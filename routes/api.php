@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('register', [JWTAuthController::class, 'register'])->name('api.jwt.register');
 
 Route::post('login', [JWTAuthController::class, 'login'])->name('api.jwt.login');
@@ -38,4 +34,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('user', [JWTAuthController::class, 'user'])->name('api.jwt.user');
     Route::get('refresh', [JWTAuthController::class, 'refresh'])->name('api.jwt.refresh');
     Route::get('logout', [JWTAuthController::class, 'logout'])->name('jwt.auth.logout');
+    Route::post('post/store', [PostController::class, 'store'])->name('api.post.store');
 });

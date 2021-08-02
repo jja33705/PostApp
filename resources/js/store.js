@@ -9,6 +9,7 @@ export default new Vuex.Store({
     state: {
         isLoggedIn: !!localStorage.getItem('token'),
         user: null,
+        posts: [],
     },
     mutations: {
         loginUser(state) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
         },
         setUser(state, user) {
             state.user = user;
+        },
+        setPosts(state, posts) {
+            state.posts = posts;
         },
     },
     actions: {
@@ -60,7 +64,32 @@ export default new Vuex.Store({
             } catch (error) {
                 console.log(error);
             }
-        }
+        },
+        getPosts({
+            commit
+        }) {
+            axios.get('/api/index')
+                .then((response) => {
+                    commit('setPosts', response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        async createPost(context, payload) {
+            try {
+                await axios.post('/api/post/store', payload, {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('token'),
+                    },
+                })
+                context.dispatch('getPosts');
+                payload.title = '';
+                payload.content = '';
+            } catch (error) {
+                console.log(error);
+            };
+        },
     },
     plugins: [
         createPersistedState(),

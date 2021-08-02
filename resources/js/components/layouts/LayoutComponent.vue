@@ -233,14 +233,13 @@
       </v-menu>
     </v-app-bar>
 
-    <v-main>
-      <router-view>
-        
-      </router-view>
+    <v-main app>
+      <router-view></router-view>
     </v-main>
     <v-footer
       dark
       padless
+      app
     >
       <v-card
         class="flex"
