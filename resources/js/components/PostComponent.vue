@@ -1,27 +1,22 @@
 <template>
     <v-container fluid>
-        <v-row dense>
+        <v-row 
+          dense
+          v-for="post in posts"
+          :key="post.id"
+        >
           <v-col
-            v-for="post in posts"
-            :key="post.id"
-            cols="3"
+            cols="12"
           >
             <v-card
               class="mx-auto"
               white
-              max-width="400"
             >
               <v-card-title>
-                <v-icon
-                  large
-                  left
-                >
-                  mdi-twitter
-                </v-icon>
-                <span class="text-h6 font-weight-light">{{ post.title }}</span>
+                <span class="text-h5 font-weight-bold">{{ post.title }}</span>
               </v-card-title>
           
-              <v-card-text class="text-h5 font-weight-bold">
+              <v-card-text class="text-h6 font-weight-light">
                 {{ post.content }}
               </v-card-text>
           
@@ -36,25 +31,51 @@
                   </v-list-item-avatar>
           
                   <v-list-item-content>
-                    <v-list-item-title>{{ post.userName }}</v-list-item-title>
+                    <v-list-item-title>{{ post.user.name }}</v-list-item-title>
                   </v-list-item-content>
           
                   <v-row
                     align="center"
                     justify="end"
                   >
-                    <v-btn>
-                      <v-icon
-                      color="red"
-                      class="mr-1"
-                      >
-                        mdi-heart
-                      </v-icon>
-                      <span class="subheading mr-2">256</span>
+                    <v-btn
+                      icon
+                      color="pink"
+                      @click="onClickHeart(post.id)"
+                    >
+                      <v-icon>mdi-heart</v-icon>
                     </v-btn>
+                    <span class="subheading mr-2">{{ post.likes.length }}</span>
                   </v-row>
                 </v-list-item>
               </v-card-actions>
+              <v-row>
+                <v-col
+                  cols="10"
+                >
+                  <v-textarea
+                    label="comment"
+                    height="70"
+                  ></v-textarea>
+                </v-col>
+                <v-col
+                  cols="4"
+                >
+                  <v-btn>
+                  </v-btn>
+                </v-col>
+
+              </v-row>
+              <v-divider></v-divider>
+              <v-card-subtitle class="pb-0">
+                Number 10
+              </v-card-subtitle>
+          
+              <v-card-text class="text--primary">
+                <div>Whitehaven Beach</div>
+          
+                <div>Whitsunday Island, Whitsunday Islands</div>
+              </v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -145,6 +166,20 @@ export default {
       onClickCreatePost() {
         this.createPost(this.createPostForm);
         this.dialog = false;
+      },
+      onClickHeart(id) {
+        axios.post('/api/post/like/'+id, null, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          this.$store.dispatch('getPosts');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       },
     },
     mounted() {

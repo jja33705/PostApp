@@ -35,4 +35,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('refresh', [JWTAuthController::class, 'refresh'])->name('api.jwt.refresh');
     Route::get('logout', [JWTAuthController::class, 'logout'])->name('jwt.auth.logout');
     Route::post('post/store', [PostController::class, 'store'])->name('api.post.store');
+    Route::post('post/like/{id}', [PostController::class, 'like'])->name('api/post/like');
 });
