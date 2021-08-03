@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JWTAuthController;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
@@ -36,4 +37,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('logout', [JWTAuthController::class, 'logout'])->name('jwt.auth.logout');
     Route::post('post/store', [PostController::class, 'store'])->name('api.post.store');
     Route::post('post/like/{id}', [PostController::class, 'like'])->name('api/post/like');
+    Route::post('comment/store/{id}', [CommentController::class, 'store'])->name('api/comment/store');
 });

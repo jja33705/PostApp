@@ -15,6 +15,7 @@ class PostController extends Controller
         foreach ($posts as $post) {
             $post->user;
             $post->likes;
+            $post->comments;
         }
         return response()->json($posts);
     }

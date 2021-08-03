@@ -49,33 +49,33 @@
                   </v-row>
                 </v-list-item>
               </v-card-actions>
-              <v-row>
-                <v-col
-                  cols="10"
+              <v-card-actions>
+                <v-textarea
+                  color="deep-purple"
+                  label="comment"
+                  rows="1"
+                  v-model="commentForm[post.id]"
+                  required
+                ></v-textarea>
+                <v-btn
+                  @click="onClickSubmitComment(post.id)"
                 >
-                  <v-textarea
-                    label="comment"
-                    height="70"
-                  ></v-textarea>
-                </v-col>
-                <v-col
-                  cols="4"
-                >
-                  <v-btn>
-                  </v-btn>
-                </v-col>
-
-              </v-row>
-              <v-divider></v-divider>
-              <v-card-subtitle class="pb-0">
-                Number 10
-              </v-card-subtitle>
-          
-              <v-card-text class="text--primary">
-                <div>Whitehaven Beach</div>
-          
-                <div>Whitsunday Island, Whitsunday Islands</div>
-              </v-card-text>
+                  save
+                </v-btn>
+              </v-card-actions>
+              <v-card
+                v-for="comment in post.comments"
+                :key="comment.id"
+              >
+                <v-divider></v-divider>
+                <v-card-subtitle class="pb-0">
+                  {{ comment.commenter }} {{ new Date(comment.created_at) }}
+                </v-card-subtitle>
+            
+                <v-card-text class="text--primary">
+                  <div>{{ comment.comment }}</div>
+                </v-card-text>
+              </v-card>
             </v-card>
           </v-col>
         </v-row>
@@ -159,6 +159,7 @@ export default {
               title: '',
               content: '',
             },
+            commentForm: [],
         };
     },
     methods: {
@@ -181,6 +182,21 @@ export default {
           console.log(err);
         });
       },
+      onClickSubmitComment(id) {
+        axios.post('/api/comment/store/' + id, {comment: this.commentForm[id]}, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          this.$store.dispatch('getPosts');
+          this.commentForm[id] = '';
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
     },
     mounted() {
       this.getPosts();
