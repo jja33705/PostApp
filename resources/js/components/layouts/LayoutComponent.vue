@@ -317,21 +317,24 @@ export default{
         }
     },
     methods: {
-      ...mapActions(['login', 'logout', 'register']),
+      ...mapActions(['user/login', 'user/logout', 'user/register']),
       onClickLogin() {
-        this.login(this.loginForm);
+        this['user/login'](this.loginForm);
         this.LoginDialog = false;
       },
       onClickLogout() {
-        this.logout();
+        this['user/logout']();
       },
       onClickRegister() {
-        this.register(this.registerForm);
+        this['user/register'](this.registerForm);
         this.registrationDialog = false;
       },
     },
     computed: {
-        ...mapState(['isLoggedIn', 'user']),
+        ...mapState({
+          isLoggedIn: state => state.user.inLoggedIn,
+          user: state => state.user.user,
+        }),
         initials() {
           return this.user ? this.user.name[0] : '';
         },

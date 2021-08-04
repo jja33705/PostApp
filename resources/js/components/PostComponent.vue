@@ -63,11 +63,11 @@
                   save
                 </v-btn>
               </v-card-actions>
+              <v-divider></v-divider>
               <v-card
                 v-for="comment in post.comments"
                 :key="comment.id"
               >
-                <v-divider></v-divider>
                 <v-card-subtitle class="pb-0">
                   {{ comment.commenter }} {{ new Date(comment.created_at) }}
                 </v-card-subtitle>
