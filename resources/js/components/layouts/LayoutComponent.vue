@@ -59,7 +59,7 @@
                 {{ email }}
               </p>
               <v-divider class="my-3"></v-divider>
-              <template v-if="isLoggedIn">
+              <template v-if="isAuthenticated">
                 <v-btn
                     depressed
                     rounded
@@ -279,7 +279,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/dist/vuetify.min.css'
 import router from '../../routes.js';
 import store from '../../store';
-import {mapState, mapActions} from 'vuex';
+import {mapState, mapActions, mapGetters} from 'vuex';
 
 Vue.use(Vuetify);
 
@@ -330,8 +330,10 @@ export default{
     },
     computed: {
         ...mapState({
-          isLoggedIn: state => state.user.isLoggedIn,
           user: state => state.user.user,
+        }),
+        ...mapGetters({
+          isAuthenticated: 'user/isAuthenticated',
         }),
         initials() {
           return this.user ? this.user.name[0] : '';

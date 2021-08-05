@@ -4,7 +4,8 @@ export default {
         return {
             posts: [],
             page: 1,
-        }
+            post: {},
+        };
     },
     getters: {
         pageLength(state) {
@@ -14,6 +15,9 @@ export default {
     mutations: {
         setPosts(state, posts) {
             state.posts = posts;
+        },
+        setPost(state, post) {
+            state.post = post;
         },
         setPage(state, page) {
             state.page = page;
@@ -29,6 +33,19 @@ export default {
             })
             .catch((error) => {
                 console.log(error);
+            });
+        },
+        getPost({commit}, payload) {
+            axios.get('/api/post/show/' + payload.id, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then((res) => {
+                commit('setPost', res.data);
+            })
+            .catch((err) => {
+                console.log(err);
             });
         },
         async createPost(context, payload) {

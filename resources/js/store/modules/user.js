@@ -2,17 +2,16 @@ export default {
     namespaced: true,
     state() {
         return {
-            isLoggedIn: !!localStorage.getItem('token'),
             user: null,
         }
     },
+    getters: {
+        isAuthenticated(state) {
+            if (state.user == null) return false;
+            return true; 
+        }
+    },
     mutations: {
-        loginUser(state) {
-            state.isLoggedIn = true;
-        },
-        logoutUser(state) {
-            state.isLoggedIn = false;
-        },
         setUser(state, user) {
             state.user = user;
         },
@@ -23,26 +22,24 @@ export default {
     actions: {
         async login(context, payload) {
             try {
-                const tokenResponse = await axios.post('/api/login', payload);
-                localStorage.setItem('token', tokenResponse.data.access_token);
-                const userResponse = await axios.get('/api/user', {
+                const token = await axios.post('/api/login', payload);
+                localStorage.setItem('token', token.data.access_token);
+                const user = await axios.get('/api/user', {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('token'),
                     },
                 });
-                context.commit('setUser', userResponse.data);
-                context.commit('loginUser');
+                context.commit('setUser', user.data);
                 payload.email = '';
                 payload.password = '';
             } catch (error) {
-                console.log(error);
+                console.log(error.response);
             }
         },
         logout({
             commit
         }) {
             localStorage.removeItem('token');
-            commit('logoutUser');
             commit('setUser', null);
 
         },

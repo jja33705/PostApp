@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::find($id);
-        $post->comments;
+        $post->comments = Comment::orderByDesc('created_at')->where('post_id', $id)->get();
         $post->likes;
         $post->user;
         return response()->json($post);
