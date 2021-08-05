@@ -1,25 +1,35 @@
 export default {
+    namespaced: true,
     state() {
         return {
             posts: [],
+            page: 1,
+        }
+    },
+    getters: {
+        pageLength(state) {
+            return state.posts.length ? Math.ceil(state.posts[0].count/15) : 0;
         }
     },
     mutations: {
         setPosts(state, posts) {
             state.posts = posts;
         },
+        setPage(state, page) {
+            state.page = page;
+        }
     },
     actions: {
         getPosts({
             commit
-        }) {
-            axios.get('/api/index')
-                .then((response) => {
-                    commit('setPosts', response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        }, payload) {
+            axios.get('/api/index?page=' + payload.page)
+            .then((response) => {
+                commit('setPosts', response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
         },
         async createPost(context, payload) {
             try {

@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::orderByDesc('created_at')->get();
+        $page = $request->page;
+        $posts = Post::orderByDesc('created_at')->skip(($page - 1) * 15)->take(15)->get();
         foreach ($posts as $post) {
             $post->user;
-            $post->likes;
-            $post->comments;
+            $post->count = Post::count();
         }
         return response()->json($posts);
     }
@@ -36,5 +36,19 @@ class PostController extends Controller
         $like->user_id = Auth::guard('api')->user()->id;
         $like->post_id = $id;
         $like->save();
+    }
+
+    public function show($id)
+    {
+        $post = Post::find($id);
+        $post->comments;
+        $post->likes;
+        $post->user;
+        return response()->json($post);
+    }
+
+    public function delete($id)
+    {
+        Post::destroy($id);
     }
 }

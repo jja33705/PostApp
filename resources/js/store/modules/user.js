@@ -42,8 +42,9 @@ export default {
             commit
         }) {
             localStorage.removeItem('token');
-            commit('setUser', null);
             commit('logoutUser');
+            commit('setUser', null);
+
         },
         async register(context, payload) {
             try {

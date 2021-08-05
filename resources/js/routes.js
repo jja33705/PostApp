@@ -3,14 +3,20 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-import PostComponent from './components/PostComponent.vue';
+import PostList from './components/PostList.vue';
+import PostComponent from './components/PostComponent.vue'
 
 
 export default new VueRouter({
     mode: 'history',
     routes: [{
         path: '/',
-        component: PostComponent,
+        component: PostList,
         name: 'index',
+    },
+    {
+        path: '/post/:id',
+        component: PostComponent,
+        name: 'post',
     }]
 });

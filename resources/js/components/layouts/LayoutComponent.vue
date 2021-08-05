@@ -6,16 +6,14 @@
     >
         <v-list dense>
           <v-list-item
-            v-for="item in items"
-            :key="item.title"
-            link
+            :to="{name: 'index'}"
           >
             <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
+              <v-icon>mdi-view-dashboard</v-icon>
             </v-list-item-icon>
   
             <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -280,7 +278,7 @@ import Vuetify from 'vuetify';
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/dist/vuetify.min.css'
 import router from '../../routes.js';
-import store from '../../store.js';
+import store from '../../store';
 import {mapState, mapActions} from 'vuex';
 
 Vue.use(Vuetify);
@@ -332,7 +330,7 @@ export default{
     },
     computed: {
         ...mapState({
-          isLoggedIn: state => state.user.inLoggedIn,
+          isLoggedIn: state => state.user.isLoggedIn,
           user: state => state.user.user,
         }),
         initials() {

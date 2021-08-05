@@ -1,208 +1,93 @@
 <template>
-    <v-container fluid>
-        <v-row 
-          dense
-          v-for="post in posts"
-          :key="post.id"
-        >
-          <v-col
-            cols="12"
-          >
-            <v-card
-              class="mx-auto"
-              white
-            >
-              <v-card-title>
-                <span class="text-h5 font-weight-bold">{{ post.title }}</span>
-              </v-card-title>
-          
-              <v-card-text class="text-h6 font-weight-light">
-                {{ post.content }}
-              </v-card-text>
-          
-              <v-card-actions>
-                <v-list-item class="grow">
-                  <v-list-item-avatar color="grey darken-3">
-                    <v-img
-                      class="elevation-6"
-                      alt=""
-                      src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
-                    ></v-img>
-                  </v-list-item-avatar>
-          
-                  <v-list-item-content>
-                    <v-list-item-title>{{ post.user.name }}</v-list-item-title>
-                  </v-list-item-content>
-          
-                  <v-row
-                    align="center"
-                    justify="end"
-                  >
-                    <v-btn
-                      icon
-                      color="pink"
-                      @click="onClickHeart(post.id)"
-                    >
-                      <v-icon>mdi-heart</v-icon>
-                    </v-btn>
-                    <span class="subheading mr-2">{{ post.likes.length }}</span>
-                  </v-row>
-                </v-list-item>
-              </v-card-actions>
-              <v-card-actions>
-                <v-textarea
-                  color="deep-purple"
-                  label="comment"
-                  rows="1"
-                  v-model="commentForm[post.id]"
-                  required
-                ></v-textarea>
-                <v-btn
-                  @click="onClickSubmitComment(post.id)"
-                >
-                  save
-                </v-btn>
-              </v-card-actions>
-              <v-divider></v-divider>
-              <v-card
-                v-for="comment in post.comments"
-                :key="comment.id"
-              >
-                <v-card-subtitle class="pb-0">
-                  {{ comment.commenter }} {{ new Date(comment.created_at) }}
-                </v-card-subtitle>
-            
-                <v-card-text class="text--primary">
-                  <div>{{ comment.comment }}</div>
-                </v-card-text>
-              </v-card>
-            </v-card>
-          </v-col>
+<v-container>
+    <template v-if="user.name === post.user.name">
+        <v-row justify="end" dense>
+            <v-btn @click="onClickDelete">삭제</v-btn>
+            <v-btn>수정</v-btn>
         </v-row>
-        <v-row>
-          <v-spacer></v-spacer>
-          <v-dialog
-            v-model="dialog"
-            persistent
-            max-width="600px"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                class="mx-2"
-                fab
-                dark
-                large
-                color="cyan"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon dark>
-                  mdi-pencil
-                </v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">Create Post</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="title"
-                        required
-                        v-model="createPostForm.title"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-textarea
-                        label="content"
-                        auto-grow
-                        required
-                        v-model="createPostForm.content"
-                      ></v-textarea>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="dialog = false"
-                >
-                  Close
-                </v-btn>
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="onClickCreatePost"
-                >
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-row>
-    </v-container>
+    </template>
+    <v-row justify="center" dense style="height: 80px;" align="center">
+        <h1>{{ post.title }}</h1>
+    </v-row>
+    <v-row justify="end" dense style="height: 40px" align="center">
+      <div> 
+          {{ post.user.name }}
+      </div>
+    </v-row>
+    <v-row justify="end" dense style="height: 30px">
+      <div>
+        {{ new Date(post.created_at) }}
+      </div>
+    </v-row>
+    <v-row justify="center" dense>
+        <h6>{{ post.content }}</h6>
+    </v-row>
+    <v-divider></v-divider>
+    <v-row>
+        <v-textarea 
+            label="comment" 
+            rows="1"
+            v-model="comment" 
+            required
+        ></v-textarea>
+        <v-btn @click="onClickSubmitComment(post.id)">save</v-btn>
+    </v-row>
+    <v-card v-for="comment in post.comments"
+        :key="comment.id"
+    >    
+        <v-card-title>{{ comment.commenter }}</v-card-title>
+        <v-card-subtitle>{{ new Date(comment.created_at) }}</v-card-subtitle>
+        <v-card-text>{{ comment.comment }}</v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
-<script>
-import {mapState, mapActions} from 'vuex';
+
+
+<script> 
+import {mapState} from 'vuex';
 export default {
     data() {
         return {
-            dialog: false,
-            createPostForm: {
-              title: '',
-              content: '',
-            },
-            commentForm: [],
+            post: null,
+            comment: '',
         };
     },
     methods: {
-      ...mapActions(['getPosts', 'createPost']),
-      onClickCreatePost() {
-        this.createPost(this.createPostForm);
-        this.dialog = false;
-      },
-      onClickHeart(id) {
-        axios.post('/api/post/like/'+id, null, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          this.$store.dispatch('getPosts');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      },
-      onClickSubmitComment(id) {
-        axios.post('/api/comment/store/' + id, {comment: this.commentForm[id]}, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          this.$store.dispatch('getPosts');
-          this.commentForm[id] = '';
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      }
-    },
-    mounted() {
-      this.getPosts();
+        onClickDelete() {
+            axios.delete('/api/post/' + this.$route.params.id, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then((res) => {
+                this.$router.push({name: 'index'});
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        },
     },
     computed: {
-      ...mapState(['posts']),
+        ...mapState({
+            user: state => state.user.user,
+        })
     },
-};
+    mounted() {
+        axios.get('/api/post/show/' + this.$route.params.id, {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token'),
+            },
+        })
+        .then((res) => {
+            this.post = res.data;
+            console.log(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    },
+}
 </script>
+
+

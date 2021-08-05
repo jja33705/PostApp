@@ -30,6 +30,9 @@ Route::get('unauthorized', function () {
 
 Route::get('/index', [PostController::class, 'index'])->name('api.post.index');
 
+
+Route::get('post/show/{id}', [PostController::class, 'show'])->name('api/post/show');
+
 //미들웨어를 통해 로그린한 사용자와 로그인하지 않은 사용자를  판단. Middleware의 Authenticate.php를 수정하여 로그인하지 않은 사용자는 unauthorized라우트로 리다이렉트시킴
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('user', [JWTAuthController::class, 'user'])->name('api.jwt.user');
@@ -38,4 +41,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('post/store', [PostController::class, 'store'])->name('api.post.store');
     Route::post('post/like/{id}', [PostController::class, 'like'])->name('api/post/like');
     Route::post('comment/store/{id}', [CommentController::class, 'store'])->name('api/comment/store');
+    Route::delete('post/{id}', [PostController::class, 'delete'])->name('api/post/delete');
 });
