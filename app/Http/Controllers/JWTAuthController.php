@@ -47,7 +47,7 @@ class JWTAuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'messages' => $validator->messages(),
-            ], 200);
+            ], 403);
         }
 
         if (!$token = Auth::guard('api')->attempt([

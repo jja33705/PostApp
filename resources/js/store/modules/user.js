@@ -33,15 +33,14 @@ export default {
                 payload.email = '';
                 payload.password = '';
             } catch (error) {
-                console.log(error.response);
-            }
+                return Promise.reject(error);
+            };
         },
         logout({
             commit
         }) {
-            localStorage.removeItem('token');
             commit('setUser', null);
-
+            localStorage.removeItem('token');
         },
         async register(context, payload) {
             try {

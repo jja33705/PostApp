@@ -4,8 +4,10 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 import PostList from './components/PostList.vue';
-import PostComponent from './components/PostComponent.vue'
-import AddPost from './components/AddPost.vue'
+import PostComponent from './components/PostComponent.vue';
+import AddPost from './components/AddPost.vue';
+import LoginComponent from './components/LoginComponent.vue';
+import RegisterComponent from './components/RegisterComponent';
 
 
 export default new VueRouter({
@@ -25,6 +27,16 @@ export default new VueRouter({
             path: '/post/create',
             component: AddPost,
             name: 'addPost',
-        }
-    ]
+        },
+        {
+            path: '/login',
+            component: LoginComponent,
+            name: 'login',
+        },
+        {
+            path: '/register',
+            component: RegisterComponent,
+            name: 'register',
+        },
+    ],
 });
