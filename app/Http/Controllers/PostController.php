@@ -16,6 +16,7 @@ class PostController extends Controller
         $posts = Post::orderByDesc('created_at')->skip(($page - 1) * 15)->take(15)->get();
         foreach ($posts as $post) {
             $post->user;
+            $post->likes;
             $post->count = Post::count();
         }
         return response()->json($posts);
@@ -54,5 +55,13 @@ class PostController extends Controller
     public function delete($id)
     {
         Post::destroy($id);
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $post = Post::find($id);
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->save();
     }
 }

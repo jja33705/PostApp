@@ -42,4 +42,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('post/like/{id}', [PostController::class, 'like'])->name('api/post/like');
     Route::post('comment/{id}', [CommentController::class, 'store'])->name('api/comment/store');
     Route::delete('post/{id}', [PostController::class, 'delete'])->name('api/post/delete');
+    Route::patch('post/{id}', [PostController::class, 'edit'])->name('api/post/edit');
 });

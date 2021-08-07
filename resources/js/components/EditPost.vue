@@ -33,6 +33,19 @@ export  default {
     },
     methods: {
         ...mapActions(['post/getPost']),
+        onSubmit() {
+            axios.patch('/api/post/' + this.$route.params.id, {title: this.title, content: this.content}, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then(() => {
+                this.$router.push({name: 'post', params: {id: this.$route.params.id}});
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        },
     },
     mounted() {
         this['post/getPost']({id: this.$route.params.id})
@@ -44,8 +57,5 @@ export  default {
             console.log(err);
         });
     },
-    onSubmit() {
-        
-    }
-}
+};
 </script>

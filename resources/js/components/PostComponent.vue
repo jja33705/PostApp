@@ -20,6 +20,14 @@
     <v-row justify="center" dense>
         <h6>{{ post.content }}</h6>
     </v-row>
+    <v-row justify="center" dense>
+        <v-btn tile @click="onClickLike">
+            <v-icon left>
+                mdi-heart
+            </v-icon>
+            {{ post.likes.length }}
+        </v-btn>
+    </v-row>
     <v-divider></v-divider>
     <v-row>
         <v-col cols="10">
@@ -31,7 +39,7 @@
             ></v-textarea>
         </v-col>
         <v-col cols="2">
-            <v-btn @click="onClickSubmitComment(post.id)">save</v-btn>
+            <v-btn @click="onClickSubmitComment">save</v-btn>
         </v-col>
 
     </v-row>
@@ -71,8 +79,8 @@ export default {
                 console.log(err.response);
             });
         },
-        onClickSubmitComment(id) {
-            axios.post('/api/comment/' + id, {comment: this.comment}, {
+        onClickSubmitComment() {
+            axios.post('/api/comment/' + this.$route.params.id, {comment: this.comment}, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
@@ -89,6 +97,25 @@ export default {
             })
             .catch((err) => {
                 console.log(err);
+            });
+        },
+        onClickLike() {
+            axios.post('/api/post/like/' + this.$route.params.id, null, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then(() => {
+                this['post/getPost']({id: this.$route.params.id})
+                .then((res) => {
+                    this.post = res.data;
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            })
+            .catch(() => {
+                alert('이미  좋아요를 누른 게시물입니다.')
             });
         },
     },
