@@ -6,11 +6,23 @@
         <v-row>
             <v-col>
                 <v-form @submit.prevent="onSubmit">
+                    <i 
+                        v-for="(titleMessage, i) in titleMessages"
+                        :key="i"
+                    >
+                        {{ titleMessage }}
+                    </i>
                     <v-text-field 
                         label="title"
                         v-model="title"
                     >
                     </v-text-field>
+                    <i 
+                        v-for="(contentMessage, i) in contentMessages"
+                        :key="i"
+                    >
+                        {{ contentMessage }}
+                    </i>
                     <v-textarea 
                         label="content"
                         v-model="content"
@@ -29,6 +41,8 @@ export  default {
         return {
             title: '',
             content: '',
+            titleMessages: [],
+            contentMessages: [],
         };
     },
     methods: {
@@ -43,7 +57,22 @@ export  default {
                 this.$router.push({name: 'post', params: {id: this.$route.params.id}});
             })
             .catch((err) => {
-                console.log(err);
+                if(err.response.status === 401) {
+                    alert('다른 유저의 게시글을 수정할 수 없습니다.');
+                    this.$router.push('index');
+                }
+                if(err.response.status === 403) {
+                    if(err.response.data.messages.title) {
+                        this.titleMessages = err.response.data.messages.title;
+                    } else {
+                        this.titleMessages = [];
+                    }
+                    if(err.response.data.messages.content) {
+                        this.contentMessages = err.response.data.messages.content;
+                    } else {
+                        this.contentMessages = [];
+                    }
+                }
             });
         },
     },

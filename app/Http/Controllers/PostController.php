@@ -7,6 +7,7 @@ use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -24,6 +25,16 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(),  [
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'messages' => $validator->messages() //발리데이션 실패 요인을 알려줌
+            ], 403);
+        }
         $post = new Post();
         $post->title = $request->title;
         $post->content = $request->content;
@@ -54,12 +65,32 @@ class PostController extends Controller
 
     public function delete($id)
     {
-        Post::destroy($id);
+        $post = Post::find($id);
+        if (Auth::guard('api')->user()->cannot('delete', $post)) {
+            return response()->json([
+                'status' => 'error',
+                'messages' => 'PostPolicy'
+            ], 403);
+        }
+        $post->delete();
     }
 
     public function edit(Request $request, $id)
     {
+        $validator = Validator::make($request->all(),  [
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'messages' => $validator->messages() //발리데이션 실패 요인을 알려줌
+            ], 403);
+        }
         $post = Post::find($id);
+        if (Auth::guard('api')->user()->cannot('edit', $post)) {
+            abort(401);
+        }
         $post->title = $request->title;
         $post->content = $request->content;
         $post->save();

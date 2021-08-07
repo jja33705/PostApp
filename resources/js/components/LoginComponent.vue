@@ -12,7 +12,8 @@
                         v-for="(emailMessage, i) in emailMessages"
                         :key="i"
                     >
-                        {{ emailMessage }}</i>
+                        {{ emailMessage }}
+                    </i>
                     <v-text-field 
                         label="email" 
                         type="email" 
@@ -63,9 +64,6 @@ export default{
                 this.$router.push({name: 'index'});
             })
             .catch((err) => {
-                console.log(err.response);
-                console.log(err.response.status);
-                console.log(typeof(err.response.status));
                 if(err.response.status === 401) {
                     this.message = '아이디, 비밀번호를 다시 확인해 주세요';
                 } else {

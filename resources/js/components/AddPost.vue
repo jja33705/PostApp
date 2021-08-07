@@ -6,14 +6,27 @@
         <v-row>
             <v-col>
                 <v-form @submit.prevent="onSubmit">
+                    <i 
+                        v-for="(titleMessage, i) in titleMessages"
+                        :key="i"
+                    >
+                        {{ titleMessage }}
+                    </i>
                     <v-text-field 
                         label="title"
                         v-model="title"
                     >
                     </v-text-field>
+                    <i 
+                        v-for="(contentMessage, i) in contentMessages"
+                        :key="i"
+                    >
+                        {{ contentMessage }}
+                    </i>
                     <v-textarea 
                         label="content"
                         v-model="content"
+                        required
                     ></v-textarea>
                     <v-btn type="submit">저장</v-btn>
                 </v-form>
@@ -28,6 +41,8 @@ export default {
         return {
             title: '',
             content: '',
+            titleMessages: [],
+            contentMessages: [],
         };
     },
     methods: {
@@ -41,7 +56,18 @@ export default {
                 this.$router.push({name: 'post', params: {id: res.data.id}});
             })
             .catch((err) => {
-                console.log(err);
+                if(err.response.status === 403) {
+                    if(err.response.data.messages.title) {
+                        this.titleMessages = err.response.data.messages.title;
+                    } else {
+                        this.titleMessages = [];
+                    }
+                    if(err.response.data.messages.content) {
+                        this.contentMessages = err.response.data.messages.content;
+                    } else {
+                        this.contentMessages = [];
+                    }
+                }
             });
         },
     },

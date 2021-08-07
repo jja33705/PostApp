@@ -11,7 +11,9 @@ import RegisterComponent from './components/RegisterComponent.vue';
 import EditPost from './components/EditPost.vue'
 
 
-export default new VueRouter({
+
+
+const router =  new VueRouter({
     mode: 'history',
     routes: [
         {
@@ -28,6 +30,7 @@ export default new VueRouter({
             path: '/post/create',
             component: AddPost,
             name: 'addPost',
+            meta: {requiresAuth: true},
         },
         {
             path: '/login',
@@ -43,6 +46,21 @@ export default new VueRouter({
             path: '/edit/:id',
             component: EditPost,
             name: 'edit',
+            meta: {requiresAuth: true},
         }
     ],
 });
+
+const auth = (to, from, next) => {
+    if(to.matched.some((record) => record.meta.requiresAuth)) {
+        if(localStorage.getItem('token') == null) {
+          alert('로그인이 필요합니다.');
+          next('/login');
+        }
+      }
+      next();
+};
+
+router.beforeEach(auth);
+
+export default router;

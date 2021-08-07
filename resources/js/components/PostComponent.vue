@@ -31,6 +31,12 @@
     <v-divider></v-divider>
     <v-row>
         <v-col cols="10">
+            <i 
+                v-for="(commentMessage, i) in commentMessages"
+                :key="i"
+            >
+                {{ commentMessage }}
+            </i>
             <v-textarea 
                 label="comment" 
                 rows="1"
@@ -62,6 +68,7 @@ export default {
         return {
             post: {},
             comment: '',
+            commentMessages: [],
         };
     },
     methods: {
@@ -77,6 +84,13 @@ export default {
             })
             .catch((err) => {
                 console.log(err.response);
+                if(err.response.data.messages === 'PostPolicy') {
+                    alert('다른 유저의 게시글을 삭제할수 없습니다.');
+                }
+                else {
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
+                }
             });
         },
         onClickSubmitComment() {
@@ -96,7 +110,13 @@ export default {
                 this.comment = '';
             })
             .catch((err) => {
-                console.log(err);
+                if(err.response.status === 403) {
+                    if(err.response.data.messages.comment) {
+                        this.commentMessages = err.response.data.messages.comment;
+                    } else {
+                        this.commentMessages = [];
+                    }
+                }
             });
         },
         onClickLike() {
