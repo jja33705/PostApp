@@ -45,6 +45,9 @@ class PostController extends Controller
         $post->comments = Comment::orderByDesc('created_at')->where('post_id', $id)->get();
         $post->likes;
         $post->user;
+        foreach ($post->comments as $comment) {
+            $comment->user;
+        }
         return response()->json($post);
     }
 

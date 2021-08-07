@@ -1,11 +1,9 @@
 <template>
 <v-container>
-    <template v-if="user && user.name === post.user.name">
-        <v-row justify="end" dense>
-            <v-btn @click="onClickDelete">삭제</v-btn>
-            <v-btn>수정</v-btn>
-        </v-row>
-    </template>
+    <v-row justify="end" dense>
+        <v-btn @click="onClickDelete">삭제</v-btn>
+        <v-btn :to="{name:'edit', params: {id: $route.params.id}}">수정</v-btn>
+    </v-row>
     <v-row justify="center" dense style="height: 80px;" align="center">
         <h1>{{ post.title }}</h1>
     </v-row>
@@ -24,18 +22,23 @@
     </v-row>
     <v-divider></v-divider>
     <v-row>
-        <v-textarea 
-            label="comment" 
-            rows="1"
-            v-model="comment" 
-            required
-        ></v-textarea>
-        <v-btn @click="onClickSubmitComment(post.id)">save</v-btn>
+        <v-col cols="10">
+            <v-textarea 
+                label="comment" 
+                rows="1"
+                v-model="comment" 
+                required
+            ></v-textarea>
+        </v-col>
+        <v-col cols="2">
+            <v-btn @click="onClickSubmitComment(post.id)">save</v-btn>
+        </v-col>
+
     </v-row>
     <v-card v-for="comment in post.comments"
         :key="comment.id"
     >    
-        <v-card-title>{{ comment.commenter }}</v-card-title>
+        <v-card-title>{{ comment.user.name }}</v-card-title>
         <v-card-subtitle>{{ new Date(comment.created_at) }}</v-card-subtitle>
         <v-card-text>{{ comment.comment }}</v-card-text>
     </v-card>
@@ -45,10 +48,11 @@
 
 
 <script> 
-import {mapState, mapActions} from 'vuex';
+import {mapActions} from 'vuex';
 export default {
     data() {
         return {
+            post: {},
             comment: '',
         };
     },
@@ -60,7 +64,7 @@ export default {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
             })
-            .then((res) => {
+            .then(() => {
                 this.$router.push({name: 'index'});
             })
             .catch((err) => {
@@ -73,23 +77,29 @@ export default {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
             })
-            .then((res) => {
-                this['post/getPost']({id: this.$route.params.id});
+            .then(() => {
+                this['post/getPost']({id: this.$route.params.id})
+                .then((res) => {
+                    this.post = res.data;
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
                 this.comment = '';
             })
             .catch((err) => {
                 console.log(err);
             });
-        }
-    },
-    computed: {
-        ...mapState({
-            user: state => state.user.user,
-            post: state => state.post.post,
-        })
+        },
     },
     mounted() {
-        this['post/getPost']({id: this.$route.params.id});
+        this['post/getPost']({id: this.$route.params.id})
+        .then((res) => {
+            this.post = res.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     },
 }
 </script>

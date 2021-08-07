@@ -54,8 +54,8 @@ export default {
                 payload.password = '';
                 payload.password_confirmation = '';
             } catch (error) {
-                console.log(error);
-            }
+                return Promise.reject(error);
+            };
         },
     },
 }

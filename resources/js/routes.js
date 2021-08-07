@@ -7,7 +7,8 @@ import PostList from './components/PostList.vue';
 import PostComponent from './components/PostComponent.vue';
 import AddPost from './components/AddPost.vue';
 import LoginComponent from './components/LoginComponent.vue';
-import RegisterComponent from './components/RegisterComponent';
+import RegisterComponent from './components/RegisterComponent.vue';
+import EditPost from './components/EditPost.vue'
 
 
 export default new VueRouter({
@@ -38,5 +39,10 @@ export default new VueRouter({
             component: RegisterComponent,
             name: 'register',
         },
+        {
+            path: '/edit/:id',
+            component: EditPost,
+            name: 'edit',
+        }
     ],
 });

@@ -14,7 +14,6 @@ class CommentController extends Controller
         $comment->comment = $request->comment;
         $comment->user_id = Auth::guard('api')->user()->id;
         $comment->post_id = $id;
-        $comment->commenter = Auth::guard('api')->user()->name;
         $comment->save();
     }
 }

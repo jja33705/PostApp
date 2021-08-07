@@ -13,7 +13,7 @@ class JWTAuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
-            'email' => 'required|email|max:255:unique:users',
+            'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|max:255|confirmed',
             'password_confirmation' => 'required|string|min:8|max:255',
         ]);
@@ -22,7 +22,7 @@ class JWTAuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'messages' => $validator->messages() //발리데이션 실패 요인을 알려줌
-            ], 200);
+            ], 403);
         }
 
         $user = new User();
