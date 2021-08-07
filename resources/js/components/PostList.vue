@@ -21,6 +21,9 @@
                 <th class="text-left">
                   작성일
                 </th>
+                <th class="text-left">
+                  조회수
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -30,7 +33,8 @@
               >
                 <td><router-link :to="{name: 'post', params: { id: post.id }}">{{ post.title }}</router-link></td>
                 <td>{{ post.user.name }}</td>
-                <td>{{ new Date(post.created_at) }}</td>
+                <td>{{ getDate(post.created_at) }}</td>
+                <td>{{ post.viewers }}</td>
               </tr>
             </tbody>
           </template>
@@ -53,53 +57,19 @@ import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
     data() {
         return {
-            dialog: false,
-            createPostForm: {
-              title: '',
-              content: '',
-            },
             commentForm: [],
             page: 1,
         };
     },
     methods: {
-      ...mapActions(['post/getPosts', 'post/createPost']),
-      onClickCreatePost() {
-        this['createPost'](this.createPostForm);
-        this.dialog = false;
-      },
+      ...mapActions(['post/getPosts']),
       onClickPage(page) {
         this['post/getPosts']({page: page});
         this.$store.commit('post/setPage', page);
       },
-      onClickHeart(id) {
-        axios.post('/api/post/like/'+id, null, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          this['post/getPosts'](this.page);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      },
-      onClickSubmitComment(id) {
-        axios.post('/api/comment/store/' + id, {comment: this.commentForm[id]}, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          this['post/getPosts']();
-          this.commentForm[id] = '';
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      getDate(metaDate) {
+        const dateObj = new Date(metaDate);
+        return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
       }
     },
     mounted() {

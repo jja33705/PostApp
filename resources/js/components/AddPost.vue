@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 export default {
     data() {
         return {
@@ -46,6 +47,7 @@ export default {
         };
     },
     methods: {
+        ...mapActions(['user/logout']),
         onSubmit() {
             axios.post('/api/post/store', {title: this.title, content: this.content}, {
                 headers: {
@@ -67,6 +69,10 @@ export default {
                     } else {
                         this.contentMessages = [];
                     }
+                } else {
+                    this['user/logout']();
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
                 }
             });
         },

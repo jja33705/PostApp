@@ -46,7 +46,7 @@ export  default {
         };
     },
     methods: {
-        ...mapActions(['post/getPost']),
+        ...mapActions(['post/getPost', 'user/logout']),
         onSubmit() {
             axios.patch('/api/post/' + this.$route.params.id, {title: this.title, content: this.content}, {
                 headers: {
@@ -57,11 +57,11 @@ export  default {
                 this.$router.push({name: 'post', params: {id: this.$route.params.id}});
             })
             .catch((err) => {
-                if(err.response.status === 401) {
+                if(err.response.status === 403) {
+                    if(err.response.data.messages === 'PostPolicy') {
                     alert('다른 유저의 게시글을 수정할 수 없습니다.');
                     this.$router.push('index');
-                }
-                if(err.response.status === 403) {
+                    }
                     if(err.response.data.messages.title) {
                         this.titleMessages = err.response.data.messages.title;
                     } else {
@@ -72,6 +72,10 @@ export  default {
                     } else {
                         this.contentMessages = [];
                     }
+                } else {
+                    this['user/logout']();
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
                 }
             });
         },

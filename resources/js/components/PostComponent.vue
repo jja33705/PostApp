@@ -1,23 +1,30 @@
 <template>
 <v-container>
     <v-row justify="end" dense>
-        <v-btn @click="onClickDelete">삭제</v-btn>
-        <v-btn :to="{name:'edit', params: {id: $route.params.id}}">수정</v-btn>
+        <template v-if="user && user.id === post.user.id">
+            <v-btn @click="onClickDelete">삭제</v-btn>
+            <v-btn :to="{name:'edit', params: {id: $route.params.id}}">수정</v-btn>
+        </template>
     </v-row>
     <v-row justify="center" dense style="height: 80px;" align="center">
         <h1>{{ post.title }}</h1>
     </v-row>
+    <v-row justify="end" dense style="height: 30px" align="center">
+      <div> 
+          조회수: {{ post.viewers }}
+      </div>
+    </v-row>
     <v-row justify="end" dense style="height: 40px" align="center">
       <div> 
-          {{ post.user.name }}
+          작성자: {{ post.user.name }}
       </div>
     </v-row>
     <v-row justify="end" dense style="height: 30px">
       <div>
-        {{ new Date(post.created_at) }}
+        {{ getDate(post.created_at) }}
       </div>
     </v-row>
-    <v-row justify="center" dense>
+    <v-row justify="start" dense>
         <h6>{{ post.content }}</h6>
     </v-row>
     <v-row justify="center" dense>
@@ -53,7 +60,7 @@
         :key="comment.id"
     >    
         <v-card-title>{{ comment.user.name }}</v-card-title>
-        <v-card-subtitle>{{ new Date(comment.created_at) }}</v-card-subtitle>
+        <v-card-subtitle>{{ getDate(comment.created_at) }} <a @click="onClickDeleteComment(comment.id)">삭제</a></v-card-subtitle>
         <v-card-text>{{ comment.comment }}</v-card-text>
     </v-card>
   </v-container>
@@ -62,7 +69,7 @@
 
 
 <script> 
-import {mapActions} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 export default {
     data() {
         return {
@@ -72,7 +79,7 @@ export default {
         };
     },
     methods: {
-        ...mapActions(['post/getPost']),
+        ...mapActions(['post/getPost', 'user/logout']),
         onClickDelete() {
             axios.delete('/api/post/' + this.$route.params.id, {
                 headers: {
@@ -83,11 +90,10 @@ export default {
                 this.$router.push({name: 'index'});
             })
             .catch((err) => {
-                console.log(err.response);
                 if(err.response.data.messages === 'PostPolicy') {
                     alert('다른 유저의 게시글을 삭제할수 없습니다.');
-                }
-                else {
+                } else {
+                    this['user/logout']();
                     alert('로그인이 필요합니다.')
                     this.$router.push({name: 'login'});
                 }
@@ -116,6 +122,10 @@ export default {
                     } else {
                         this.commentMessages = [];
                     }
+                } else {
+                    this['user/logout']();
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
                 }
             });
         },
@@ -134,10 +144,45 @@ export default {
                     console.log(err);
                 });
             })
-            .catch(() => {
-                alert('이미  좋아요를 누른 게시물입니다.')
+            .catch((err) => {
+                if(err.response.status === 500) {
+                    alert('이미  좋아요를 누른 게시물입니다.')
+                } else {
+                    this['user/logout']();
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
+                }
             });
         },
+        getDate(metaDate) {
+            const dateObj = new Date(metaDate);
+            return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
+        },
+        onClickDeleteComment(id) {
+            console.log('클릭함');
+            axios.delete('api/comment/' + id, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then(() => {
+                this['post/getPost']({id: this.$route.params.id})
+                .then((res) => {
+                    this.post = res.data;
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            })
+            .chtch((err) => {
+                console.log(err);
+            });
+        },
+    },
+    computed: {
+        ...mapState({
+            user: state => state.user.user,
+        }),
     },
     mounted() {
         this['post/getPost']({id: this.$route.params.id})

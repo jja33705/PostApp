@@ -61,7 +61,7 @@ export default{
         onSubmit() {
             this['user/login']({email: this.email, password: this.password})
             .then(() => {
-                this.$router.push({name: 'index'});
+                this.$router.go(-1);
             })
             .catch((err) => {
                 if(err.response.status === 401) {

@@ -27,4 +27,15 @@ class CommentController extends Controller
         $comment->post_id = $id;
         $comment->save();
     }
+    public function delete($id)
+    {
+        $comment = Comment::find($id);
+        if (Auth::guard('api')->user()->cannot('delete', $comment)) {
+            return response()->json([
+                'status' => 'error',
+                'messages' => 'PostPolicy'
+            ], 403);
+        }
+        $comment->delete();
+    }
 }

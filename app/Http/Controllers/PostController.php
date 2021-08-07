@@ -54,6 +54,8 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::find($id);
+        $post->viewers = $post->viewers + 1;
+        $post->save();
         $post->comments = Comment::orderByDesc('created_at')->where('post_id', $id)->get();
         $post->likes;
         $post->user;
@@ -89,7 +91,10 @@ class PostController extends Controller
         }
         $post = Post::find($id);
         if (Auth::guard('api')->user()->cannot('edit', $post)) {
-            abort(401);
+            return response()->json([
+                'status' => 'error',
+                'messages' => 'PostPolicy'
+            ], 403);
         }
         $post->title = $request->title;
         $post->content = $request->content;
