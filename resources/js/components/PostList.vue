@@ -7,6 +7,14 @@
         </v-col>
       </v-row>
       <v-row>
+        <v-col cols="10">
+          <v-text-field placeholder="search" v-model="search"></v-text-field>
+        </v-col>
+        <v-col>
+          <v-btn @click="onClickSearch">검색</v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col>
         <v-simple-table>
           <template v-slot:default>
@@ -53,38 +61,63 @@
 </template>
 
 <script>
-import {mapState, mapActions, mapGetters} from 'vuex';
+import {mapState, mapActions} from 'vuex';
 export default {
     data() {
         return {
-            commentForm: [],
+            posts: [],
+            search: '',
             page: 1,
         };
     },
     methods: {
       ...mapActions(['post/getPosts']),
       onClickPage(page) {
-        this['post/getPosts']({page: page});
         this.$store.commit('post/setPage', page);
+        this['post/getPosts']()
+        .then((res) => {
+          this.posts = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       },
       getDate(metaDate) {
         const dateObj = new Date(metaDate);
-        return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
+        return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}   ${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
+      },
+      onClickSearch() {
+        this.$store.commit('post/setSearch', this.search)
+        this.$store.commit('post/setPage', 1);
+        this['post/getPosts']()
+        .then((res) => {
+          this.posts = res.data;
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       }
     },
     mounted() {
       this.page = this.currentPage;
-      this['post/getPosts']({page: this.page});
-      
+      this.search = this.currentSearch;
+      this['post/getPosts']()
+      .then((res) => {
+        this.posts = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     },
     computed: {
       ...mapState({
-        posts: state => state.post.posts,
         currentPage: state => state.post.page,
+        currentSearch: state => state.post.search,
       }),
-      ...mapGetters({
-        pageLength: 'post/pageLength',
-      }),
-    }
+      pageLength() {
+        return this.posts.length ? Math.ceil(this.posts[0].count/15) : 0;
+      },
+    },
 };
 </script>

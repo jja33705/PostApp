@@ -2,33 +2,28 @@ export default {
     namespaced: true,
     state() {
         return {
-            posts: [],
             page: 1,
+            search: '',
         };
     },
-    getters: {
-        pageLength(state) {
-            return state.posts.length ? Math.ceil(state.posts[0].count/15) : 0;
-        }
-    },
     mutations: {
-        setPosts(state, posts) {
-            state.posts = posts;
-        },
         setPage(state, page) {
             state.page = page;
-        }
+        },
+        setSearch(state, search) {
+            state.search = search;
+        },
     },
     actions: {
-        getPosts({
-            commit
-        }, payload) {
-            axios.get('/api/index?page=' + payload.page)
-            .then((response) => {
-                commit('setPosts', response.data);
-            })
-            .catch((error) => {
-                console.log(error);
+        getPosts(context, payload) {
+            return new Promise((resolve, reject) => {
+                axios.get(`/api/index?page=${context.state.page}&search=%${context.state.search}%`)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
             });
         },
         getPost(context, payload) {

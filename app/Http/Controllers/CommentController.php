@@ -33,7 +33,7 @@ class CommentController extends Controller
         if (Auth::guard('api')->user()->cannot('delete', $comment)) {
             return response()->json([
                 'status' => 'error',
-                'messages' => 'PostPolicy'
+                'messages' => 'CommentPolicy'
             ], 403);
         }
         $comment->delete();

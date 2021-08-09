@@ -60,7 +60,7 @@
         :key="comment.id"
     >    
         <v-card-title>{{ comment.user.name }}</v-card-title>
-        <v-card-subtitle>{{ getDate(comment.created_at) }} <a @click="onClickDeleteComment(comment.id)">삭제</a></v-card-subtitle>
+        <v-card-subtitle>{{ getDate(comment.created_at) }} <a v-if="user && user.id === comment.user.id" @click="onClickDeleteComment(comment.id)">삭제</a></v-card-subtitle>
         <v-card-text>{{ comment.comment }}</v-card-text>
     </v-card>
   </v-container>
@@ -91,7 +91,7 @@ export default {
             })
             .catch((err) => {
                 if(err.response.data.messages === 'PostPolicy') {
-                    alert('다른 유저의 게시글을 삭제할수 없습니다.');
+                    alert('게시글을 삭제할 권한이 없습니다.');
                 } else {
                     this['user/logout']();
                     alert('로그인이 필요합니다.')
@@ -146,7 +146,7 @@ export default {
             })
             .catch((err) => {
                 if(err.response.status === 500) {
-                    alert('이미  좋아요를 누른 게시물입니다.')
+                    alert('이미 좋아요를 누른 게시물입니다.')
                 } else {
                     this['user/logout']();
                     alert('로그인이 필요합니다.')
@@ -156,11 +156,11 @@ export default {
         },
         getDate(metaDate) {
             const dateObj = new Date(metaDate);
-            return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
+            return `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}   ${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
         },
         onClickDeleteComment(id) {
             console.log('클릭함');
-            axios.delete('api/comment/' + id, {
+            axios.delete('/api/comment/' + id, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
@@ -174,8 +174,15 @@ export default {
                     console.log(err);
                 });
             })
-            .chtch((err) => {
+            .catch((err) => {
                 console.log(err);
+                if(err.response.data.messages === 'CommentPolicy') {
+                    alert('댓글을 삭제할 권한이 없습니다.');
+                } else {
+                    this['user/logout']();
+                    alert('로그인이 필요합니다.')
+                    this.$router.push({name: 'login'});
+                }
             });
         },
     },

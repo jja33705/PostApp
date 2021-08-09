@@ -14,11 +14,11 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $page = $request->page;
-        $posts = Post::orderByDesc('created_at')->skip(($page - 1) * 15)->take(15)->get();
+        $posts = Post::where('title', 'like', $request->search)->orderByDesc('created_at')->skip(($page - 1) * 15)->take(15)->get();
         foreach ($posts as $post) {
             $post->user;
             $post->likes;
-            $post->count = Post::count();
+            $post->count = count(Post::where('title', 'like', $request->search)->get());
         }
         return response()->json($posts);
     }

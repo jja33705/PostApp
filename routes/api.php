@@ -21,13 +21,6 @@ Route::post('register', [JWTAuthController::class, 'register'])->name('api.jwt.r
 
 Route::post('login', [JWTAuthController::class, 'login'])->name('api.jwt.login');
 
-Route::get('unauthorized', function () {
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Unauthorized',
-    ], 401);
-})->name('api.jwt.unauthorized');
-
 Route::get('/index', [PostController::class, 'index'])->name('api.post.index');
 
 
