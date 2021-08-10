@@ -24,6 +24,13 @@
         {{ getDate(post.created_at) }}
       </div>
     </v-row>
+    <v-row justify="center" dense v-if="post.image">
+        <v-img 
+            :src="post.image"
+            max-width="300"
+            >
+        </v-img>
+    </v-row>
     <v-row justify="start" dense>
         <h6>{{ post.content }}</h6>
     </v-row>

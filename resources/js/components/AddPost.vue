@@ -17,6 +17,11 @@
                         v-model="title"
                     >
                     </v-text-field>
+                    <v-file-input
+                        label="image"
+                        @change="onChangeImage"
+                    >
+                    </v-file-input>
                     <i 
                         v-for="(contentMessage, i) in contentMessages"
                         :key="i"
@@ -37,6 +42,7 @@
 
 <script>
 import {mapActions} from 'vuex';
+
 export default {
     data() {
         return {
@@ -44,18 +50,25 @@ export default {
             content: '',
             titleMessages: [],
             contentMessages: [],
+            file: null,
         };
     },
     methods: {
         ...mapActions(['user/logout']),
         onSubmit() {
-            axios.post('/api/post/store', {title: this.title, content: this.content}, {
+            const formData = new FormData();
+            formData.append('title', this.title);
+            formData.append('content', this.content);
+            formData.append('file', this.file);
+            axios.post('/api/post/store', formData, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type' : 'multipart/form-data',
                 },
             })
             .then((res) => {
-                this.$router.push({name: 'post', params: {id: res.data.id}});
+                console.log(res);
+                // this.$router.push({name: 'post', params: {id: res.data.id}});
             })
             .catch((err) => {
                 if(err.response.status === 403) {
@@ -75,6 +88,9 @@ export default {
                     this.$router.push({name: 'login'});
                 }
             });
+        },
+        onChangeImage(file) {
+            this.file = file;
         },
     },
 };

@@ -7,6 +7,7 @@ use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
@@ -36,6 +37,12 @@ class PostController extends Controller
             ], 403);
         }
         $post = new Post();
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = Storage::putFile('/public/images', $file);
+            $url = Storage::url($path);
+            $post->image = $url;
+        }
         $post->title = $request->title;
         $post->content = $request->content;
         $post->user_id = Auth::guard('api')->user()->id;
@@ -95,6 +102,12 @@ class PostController extends Controller
                 'status' => 'error',
                 'messages' => 'PostPolicy'
             ], 403);
+        }
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = Storage::putFile('/public/images', $file);
+            $url = Storage::url($path);
+            $post->image = $url;
         }
         $post->title = $request->title;
         $post->content = $request->content;

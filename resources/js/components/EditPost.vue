@@ -17,6 +17,11 @@
                         v-model="title"
                     >
                     </v-text-field>
+                    <v-file-input
+                        :label="currentFile"
+                        @change="onChangeImage"
+                    >
+                    </v-file-input>
                     <i 
                         v-for="(contentMessage, i) in contentMessages"
                         :key="i"
@@ -41,6 +46,8 @@ export  default {
         return {
             title: '',
             content: '',
+            file: null,
+            currentFile: '',
             titleMessages: [],
             contentMessages: [],
         };
@@ -48,9 +55,17 @@ export  default {
     methods: {
         ...mapActions(['post/getPost', 'user/logout']),
         onSubmit() {
-            axios.patch('/api/post/' + this.$route.params.id, {title: this.title, content: this.content}, {
+            const formData = new FormData();
+            formData.append('_method', 'PATCH');
+            formData.append('title', this.title);
+            formData.append('content', this.content);
+            formData.append('file', this.file);
+
+            axios.post('/api/post/' + this.$route.params.id, formData, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'multipart/form-data',
+                    'enctype' : 'multipart/form-data',
                 },
             })
             .then(() => {
@@ -79,12 +94,18 @@ export  default {
                 }
             });
         },
+        onChangeImage(file) {
+            this.file = file;
+        },
     },
     mounted() {
         this['post/getPost']({id: this.$route.params.id})
         .then((res) => {
             this.title = res.data.title;
             this.content = res.data.content;
+            if(res.data.image) {
+                this.currentFile = res.data.image;
+            }
         })
         .catch((err) => {
             console.log(err);
