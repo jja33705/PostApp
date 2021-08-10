@@ -15,7 +15,7 @@ export default {
         },
     },
     actions: {
-        getPosts(context, payload) {
+        getPosts(context) {
             return new Promise((resolve, reject) => {
                 axios.get(`/api/index?page=${context.state.page}&search=%${context.state.search}%`)
                 .then((response) => {
