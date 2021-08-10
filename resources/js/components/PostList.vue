@@ -89,6 +89,7 @@ export default {
       onClickSearch() {
         this.$store.commit('post/setSearch', this.search)
         this.$store.commit('post/setPage', 1);
+        this.page = 1;
         this['post/getPosts']()
         .then((res) => {
           this.posts = res.data;

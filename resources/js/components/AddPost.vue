@@ -67,8 +67,7 @@ export default {
                 },
             })
             .then((res) => {
-                console.log(res);
-                // this.$router.push({name: 'post', params: {id: res.data.id}});
+                this.$router.push({name: 'post', params: {id: res.data.id}});
             })
             .catch((err) => {
                 if(err.response.status === 403) {

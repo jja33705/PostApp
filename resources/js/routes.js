@@ -22,15 +22,15 @@ const router =  new VueRouter({
             name: 'index',
         },
         {
-            path: '/post/:id',
-            component: PostComponent,
-            name: 'post',
-        },
-        {
             path: '/post/create',
             component: AddPost,
             name: 'addPost',
             meta: {requiresAuth: true},
+        },
+        {
+            path: '/post/:id',
+            component: PostComponent,
+            name: 'post',
         },
         {
             path: '/login',
